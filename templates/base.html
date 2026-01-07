@@ -62,8 +62,15 @@
                     </li>
                     {% endif %}
                     {% if user.is_staff %}
-                    <li class="nav-item">
-                        <a class="nav-link fw-bold" href="{% url 'admin_analytics' %}">Analytics</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link fw-bold dropdown-toggle" href="#" id="adminDropdown" role="button"
+                            data-bs-toggle="dropdown">Admin Panel</a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'admin_analytics' %}">Dashboard & Analytics</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{% url 'user_management' %}">User Management</a></li>
+                            <li><a class="dropdown-item" href="{% url 'report_management' %}">Report Governance</a></li>
+                        </ul>
                     </li>
                     {% endif %}
                     <li class="nav-item dropdown">
