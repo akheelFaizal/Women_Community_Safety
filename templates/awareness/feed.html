@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Safety Alerts & Tips - WomenSafe{% endblock %}
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-9">
+        <h2 class="fw-bold">Community Safety Feed</h2>
+        <p class="text-muted">Stay informed with latest alerts and safety tips.</p>
+    </div>
+</div>
+
+{% if alerts %}
+<div class="mb-5">
+    <h4 class="text-danger fw-bold border-bottom pb-2"><i class="bi bi-exclamation-triangle-fill me-2"></i>Urgent Alerts
+    </h4>
+    <div class="row mt-3">
+        {% for alert in alerts %}
+        <div class="col-md-6 mb-3">
+            <div class="card border-danger shadow-sm h-100">
+                <div class="card-body text-danger">
+                    <h5 class="card-title fw-bold">{{ alert.title }}</h5>
+                    <p class="card-text">{{ alert.content|linebreaks }}</p>
+                    <small class="text-muted">{{ alert.created_at|date:"M d, Y H:i" }}</small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<div>
+    <h4 class="fw-bold border-bottom pb-2">Safety Tips & News</h4>
+    <div class="row mt-3">
+        {% for post in posts %}
+        <div class="col-md-12 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <h5 class="card-title fw-bold">{{ post.title }}</h5>
+                        <small class="text-muted">{{ post.created_at|date:"M d, Y" }}</small>
+                    </div>
+                    <p class="card-text mt-2">{{ post.content|linebreaks }}</p>
+                    <small class="text-muted">Posted by {{ post.author.username }}</small>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col">
+            <p class="text-muted">No safety tips posted yet.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

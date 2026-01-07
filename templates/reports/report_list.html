@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}My Reports - WomenSafe{% endblock %}
+{% block content %}
+<div class="row mb-3">
+    <div class="col-md-9">
+        <h2>My Reports</h2>
+    </div>
+    <div class="col-md-3 text-end">
+        <a href="{% url 'create_report' %}" class="btn btn-danger">Report New Incident</a>
+    </div>
+</div>
+
+{% if reports %}
+<div class="list-group shadow-sm">
+    {% for report in reports %}
+    <a href="{% url 'report_detail' report.pk %}" class="list-group-item list-group-item-action p-4">
+        <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1 text-primary fw-bold">{{ report.get_category_display }}</h5>
+            <small class="text-muted">{{ report.created_at|timesince }} ago</small>
+        </div>
+        <p class="mb-1">{{ report.description|truncatewords:20 }}</p>
+        <div class="mt-2">
+            <span class="badge bg-secondary">{{ report.get_status_display }}</span>
+            <small class="text-muted text-uppercase ms-2">{{ report.location_text }}</small>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-light text-center py-5">
+    <h4>No reports found.</h4>
+    <p class="text-muted">You haven't submitted any reports yet.</p>
+    <a href="{% url 'create_report' %}" class="btn btn-primary mt-3">Submit a Report</a>
+</div>
+{% endif %}
+{% endblock %}

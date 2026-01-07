@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Report #{{ report.id }} - WomenSafe{% endblock %}
+{% block content %}
+<div class="row mb-3">
+    <div class="col">
+        <a href="{% url 'user_dashboard' %}" class="btn btn-outline-secondary btn-sm">&larr; Back to Dashboard</a>
+    </div>
+</div>
+
+<div class="card shadow border-0">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0 fw-bold">Report #{{ report.id }}</h4>
+        <span
+            class="badge bg-{% if report.status == 'resolved' %}success{% elif report.status == 'submitted' %}secondary{% else %}warning text-dark{% endif %} fs-6">
+            {{ report.get_status_display }}
+        </span>
+    </div>
+    <div class="card-body p-4">
+        <div class="row">
+            <div class="col-md-8">
+                <h5 class="fw-bold text-muted mb-3">Incident Details</h5>
+                <dl class="row">
+                    <dt class="col-sm-3">Category</dt>
+                    <dd class="col-sm-9">{{ report.get_category_display }}</dd>
+
+                    <dt class="col-sm-3">Date</dt>
+                    <dd class="col-sm-9">{{ report.created_at|date:"F d, Y H:i" }}</dd>
+
+                    <dt class="col-sm-3">Location</dt>
+                    <dd class="col-sm-9">{{ report.location_text }}</dd>
+
+                    <dt class="col-sm-3">Anonymous</dt>
+                    <dd class="col-sm-9">{% if report.is_anonymous %}Yes{% else %}No{% endif %}</dd>
+                </dl>
+
+                <h6 class="fw-bold mt-4">Description</h6>
+                <div class="p-3 bg-light rounded text-dark">
+                    {{ report.description|linebreaks }}
+                </div>
+
+                {% if report.attachments.exists %}
+                <h6 class="fw-bold mt-4">Attachments</h6>
+                <ul class="list-group list-group-flush">
+                    {% for attachment in report.attachments.all %}
+                    <li class="list-group-item bg-transparent px-0">
+                        <a href="{{ attachment.file.url }}" target="_blank" class="text-decoration-none">
+                            View Attachment {{ forloop.counter }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+
+            <div class="col-md-4 border-start">
+                <h5 class="fw-bold text-muted mb-3">Updates</h5>
+                <div class="alert alert-secondary">
+                    No updates from moderators yet.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

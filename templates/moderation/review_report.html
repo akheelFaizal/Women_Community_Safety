@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block title %}Review Report #{{ report.id }} - WomenSafe{% endblock %}
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-3">
+        <div class="col">
+            <a href="{% url 'moderator_dashboard' %}" class="btn btn-outline-secondary btn-sm">&larr; Back to
+                Dashboard</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Report Details -->
+        <div class="col-md-7">
+            <div class="card shadow border-0 mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold">Incident Details (Report #{{ report.id }})</h5>
+                </div>
+                <div class="card-body p-4">
+                    <dl class="row">
+                        <dt class="col-sm-3 text-muted">Status</dt>
+                        <dd class="col-sm-9">
+                            <span
+                                class="badge bg-{% if report.status == 'resolved' %}success{% elif report.status == 'submitted' %}danger{% else %}warning text-dark{% endif %} fs-6">
+                                {{ report.get_status_display }}
+                            </span>
+                        </dd>
+
+                        <dt class="col-sm-3 text-muted">Category</dt>
+                        <dd class="col-sm-9 fw-bold">{{ report.get_category_display }}</dd>
+
+                        <dt class="col-sm-3 text-muted">Date/Time</dt>
+                        <dd class="col-sm-9">{{ report.created_at|date:"F d, Y H:i" }}</dd>
+
+                        <dt class="col-sm-3 text-muted">Location</dt>
+                        <dd class="col-sm-9">{{ report.location_text }}</dd>
+
+                        <dt class="col-sm-3 text-muted">Reporter</dt>
+                        <dd class="col-sm-9">
+                            {% if report.is_anonymous %}
+                            <span class="badge bg-secondary">Anonymous</span>
+                            <small class="text-muted d-block mt-1">Identity hidden per user request.</small>
+                            {% else %}
+                            <strong>{{ report.user.username }}</strong>
+                            {% if report.user.email %}
+                            <br><small>{{ report.user.email }}</small>
+                            {% endif %}
+                            {% if report.user.phone_number %}
+                            <br><small>{{ report.user.phone_number }}</small>
+                            {% endif %}
+                            {% endif %}
+                        </dd>
+                    </dl>
+
+                    <h6 class="fw-bold mt-4 border-bottom pb-2">Description</h6>
+                    <p class="mt-2">{{ report.description|linebreaks }}</p>
+
+                    {% if report.attachments.exists %}
+                    <h6 class="fw-bold mt-4 border-bottom pb-2">Evidence</h6>
+                    <ul class="list-group list-group-flush mt-2">
+                        {% for attachment in report.attachments.all %}
+                        <li class="list-group-item bg-light border rounded mb-2">
+                            <a href="{{ attachment.file.url }}" target="_blank"
+                                class="text-decoration-none d-flex align-items-center">
+                                <i class="bi bi-paperclip me-2"></i> View Attachment {{ forloop.counter }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Panel -->
+        <div class="col-md-5">
+            <div class="card shadow border-0 sticky-top" style="top: 2rem;">
+                <div class="card-header bg-dark text-white py-3">
+                    <h5 class="mb-0 fw-bold">Moderator Actions</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Internal Notes</label>
+                            <textarea name="note" class="form-control" rows="3"
+                                placeholder="Add notes for other moderators (optional)..."></textarea>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            {% if report.status == 'submitted' %}
+                            <button type="submit" name="action" value="mark_under_review"
+                                class="btn btn-warning text-dark fw-bold">
+                                Mark Under Review
+                            </button>
+                            {% endif %}
+
+                            {% if report.status != 'resolved' %}
+                            <button type="submit" name="action" value="resolve" class="btn btn-success fw-bold">
+                                Mark as Resolved
+                            </button>
+                            {% endif %}
+
+                            {% if report.status != 'escalated' %}
+                            <button type="submit" name="action" value="escalate" class="btn btn-danger fw-bold">
+                                Escalate to Admin
+                            </button>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

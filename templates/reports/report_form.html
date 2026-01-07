@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}Report Incident - WomenSafe{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow border-0">
+            <div class="card-header bg-danger text-white py-3">
+                <h4 class="mb-0 fw-bold">Report an Incident</h4>
+            </div>
+            <div class="card-body p-4">
+                <div class="alert alert-info border-0 shadow-sm mb-4">
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    <strong>Privacy Note:</strong> You can choose to report anonymously. Your safety is our priority.
+                </div>
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Category</label>
+                        {{ form.category }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Location</label>
+                        {{ form.location_text }}
+                        <div class="form-text">Provide as much detail as possible (Street, Landmark, etc.)</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Description</label>
+                        {{ form.description }}
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Evidence (Optional)</label>
+                        {{ form.attachment }}
+                    </div>
+
+                    <div class="mb-4 form-check">
+                        {{ form.is_anonymous }}
+                        <label class="form-check-label user-select-none" for="{{ form.is_anonymous.id_for_label }}">
+                            Submit this report anonymously (Hide my name from moderators)
+                        </label>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-danger py-2 fw-bold">Submit Report</button>
+                        <a href="{% url 'user_dashboard' %}" class="btn btn-light text-muted">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

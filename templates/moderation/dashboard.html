@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}Moderator Dashboard - WomenSafe{% endblock %}
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2 class="fw-bold text-dark">Moderator Dashboard</h2>
+        <p class="text-muted">Manage and review incoming safety reports.</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card bg-primary text-white shadow-sm border-0">
+            <div class="card-body">
+                <h5 class="card-title">New Reports</h5>
+                <h2 class="display-4 fw-bold">{{ submitted_count }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-warning text-dark shadow-sm border-0">
+            <div class="card-body">
+                <h5 class="card-title">Under Review</h5>
+                <h2 class="display-4 fw-bold">{{ under_review_count }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-success text-white shadow-sm border-0">
+            <div class="card-body">
+                <h5 class="card-title">Resolved</h5>
+                <h2 class="display-4 fw-bold">{{ resolved_count }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow border-0">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0 fw-bold">Recent Reports</h5>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light">
+                <tr>
+                    <th>Date</th>
+                    <th>Category</th>
+                    <th>Location</th>
+                    <th>Reporter</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                <tr>
+                    <td>{{ report.created_at|date:"M d, H:i" }}</td>
+                    <td>{{ report.get_category_display }}</td>
+                    <td>{{ report.location_text|truncatechars:30 }}</td>
+                    <td>
+                        {% if report.is_anonymous %}
+                        <span class="badge bg-secondary">Anonymous</span>
+                        {% else %}
+                        {{ report.user.username }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span
+                            class="badge bg-{% if report.status == 'resolved' %}success{% elif report.status == 'submitted' %}danger{% else %}warning text-dark{% endif %}">
+                            {{ report.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{% url 'review_report' report.pk %}" class="btn btn-sm btn-outline-primary">Review</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-4">No reports found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

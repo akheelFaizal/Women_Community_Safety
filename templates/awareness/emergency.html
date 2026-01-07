@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Emergency Contacts - WomenSafe{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 text-center mb-5">
+        <h2 class="fw-bold text-danger">Emergency Contacts</h2>
+        <p class="lead text-muted">Quick access to helplines and support services.</p>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="list-group shadow-sm">
+            {% for contact in contacts %}
+            <div class="list-group-item list-group-item-action p-4 d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="mb-1 fw-bold text-dark">{{ contact.name }}</h4>
+                    <p class="mb-0 text-muted">{{ contact.description }}</p>
+                </div>
+                <a href="tel:{{ contact.number }}" class="btn btn-danger btn-lg rounded-pill px-4 fw-bold">
+                    <i class="bi bi-telephone-fill me-2"></i> {{ contact.number }}
+                </a>
+            </div>
+            {% empty %}
+            <div class="text-center py-5">
+                <p class="text-muted">No emergency contacts added yet.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="mt-5 text-center">
+            <div class="alert alert-warning border-0 shadow-sm d-inline-block text-start">
+                <h5 class="alert-heading fw-bold"><i class="bi bi-shield-exclamation me-2"></i>Important</h5>
+                <p class="mb-0">If you are in immediate danger, please call your local police (100) or emergency
+                    services (112) directly without delay.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
