@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import user_passes_test, permission_required
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group
+from django.contrib.auth import get_user_model
 from django.db.models import Count
 from django.contrib import messages
 from reports.models import Report
@@ -42,6 +43,7 @@ def admin_dashboard(request):
 
 @user_passes_test(is_admin, login_url='login')
 def user_management(request):
+    User = get_user_model()
     users = User.objects.all().exclude(is_superuser=True)
     if request.method == 'POST':
         user_id = request.POST.get('user_id')

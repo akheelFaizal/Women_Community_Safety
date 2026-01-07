@@ -19,8 +19,9 @@ def register(request):
 
 @login_required
 def user_dashboard(request):
-    if request.user.is_moderator:
-        return redirect('moderator_dashboard') # To be implemented
+    # Check if user is in Moderators or Admins group
+    if request.user.groups.filter(name__in=['Moderators', 'Admins']).exists() or request.user.is_superuser:
+        return redirect('moderator_dashboard')
     
     # We will fetch reports here later
     reports = Report.objects.filter(user=request.user).order_by('-created_at')
