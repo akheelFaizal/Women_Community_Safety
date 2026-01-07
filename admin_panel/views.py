@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Count
 from django.contrib import messages
 from reports.models import Report
+from awareness.models import Post
 from django.utils import timezone
 from datetime import timedelta
 
@@ -84,3 +85,28 @@ def report_management(request):
         return redirect('report_management')
         
     return render(request, 'admin_panel/reports.html', {'reports': reports})
+
+@user_passes_test(is_admin, login_url='login')
+def content_management(request):
+    posts = Post.objects.all().order_by('-created_at')
+    
+    if request.method == 'POST':
+        post_id = request.POST.get('post_id')
+        action = request.POST.get('action')
+        post = get_object_or_404(Post, id=post_id)
+        
+        if action == 'approve':
+            post.status = 'published'
+            post.save()
+            messages.success(request, f'Post "{post.title}" published.')
+        elif action == 'reject':
+            post.status = 'rejected'
+            post.save()
+            messages.warning(request, f'Post "{post.title}" rejected.')
+        elif action == 'delete':
+            post.delete()
+            messages.error(request, 'Post deleted.')
+            
+        return redirect('content_management')
+        
+    return render(request, 'admin_panel/content.html', {'posts': posts})

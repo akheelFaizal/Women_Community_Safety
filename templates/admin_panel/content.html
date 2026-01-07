@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block title %}Content Management - WomenSafe{% endblock %}
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-9">
+        <h2 class="fw-bold">Content Management</h2>
+        <p class="text-muted">Review, approve, or reject awareness posts and alerts.</p>
+    </div>
+    <div class="col-md-3 text-end">
+        <a href="{% url 'admin_analytics' %}" class="btn btn-outline-secondary">Back to Dashboard</a>
+    </div>
+</div>
+
+<div class="card shadow border-0">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for post in posts %}
+                    <tr class="{% if post.status == 'pending' %}table-warning{% endif %}">
+                        <td>{{ post.created_at|date:"M d, H:i" }}</td>
+                        <td>
+                            <strong>{{ post.title }}</strong>
+                            <br>
+                            <small class="text-muted">{{ post.content|truncatechars:50 }}</small>
+                        </td>
+                        <td>{{ post.author.username }}</td>
+                        <td>
+                            {% if post.is_alert %}
+                            <span class="badge bg-danger">Alert</span>
+                            {% elif post.is_announcement %}
+                            <span class="badge bg-info text-dark">Announcement</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Tip</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if post.status == 'published' %}
+                            <span class="badge bg-success">Published</span>
+                            {% elif post.status == 'pending' %}
+                            <span class="badge bg-warning text-dark">Pending</span>
+                            {% else %}
+                            <span class="badge bg-danger">Rejected</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="post" class="d-inline-flex gap-1">
+                                {% csrf_token %}
+                                <input type="hidden" name="post_id" value="{{ post.id }}">
+
+                                {% if post.status != 'published' %}
+                                <button type="submit" name="action" value="approve" class="btn btn-sm btn-success"
+                                    title="Approve & Publish">
+                                    <i class="bi bi-check-lg"></i>
+                                </button>
+                                {% endif %}
+
+                                {% if post.status != 'rejected' %}
+                                <button type="submit" name="action" value="reject" class="btn btn-sm btn-warning"
+                                    title="Reject">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                                {% endif %}
+
+                                <button type="submit" name="action" value="delete" class="btn btn-sm btn-danger"
+                                    title="Delete" onclick="return confirm('Delete this post permanently?');">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-4">No content found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

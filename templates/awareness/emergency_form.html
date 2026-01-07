@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}{{ action }} Emergency Contact - WomenSafe{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow border-0">
+            <div class="card-header bg-danger text-white py-3">
+                <h4 class="mb-0 fw-bold">{{ action }} Emergency Contact</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Name</label>
+                        {{ form.name }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Phone Number</label>
+                        {{ form.number }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Description</label>
+                        {{ form.description }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Priority (0-100)</label>
+                        {{ form.priority }}
+                        <small class="text-muted d-block">Higher priority contacts appear first</small>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-danger py-2 fw-bold">Save Contact</button>
+                        <a href="{% url 'emergency_contacts' %}" class="btn btn-light text-muted">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

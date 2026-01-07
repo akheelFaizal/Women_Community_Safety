@@ -53,10 +53,38 @@
             </div>
 
             <div class="col-md-4 border-start">
-                <h5 class="fw-bold text-muted mb-3">Updates</h5>
-                <div class="alert alert-secondary">
-                    No updates from moderators yet.
+                <h5 class="fw-bold text-muted mb-3">Updates from Moderators</h5>
+
+                {% if report.responses.exists %}
+                {% for response in report.responses.all %}
+                {% if not response.is_internal %}
+                <div class="card mb-3 border-0 shadow-sm">
+                    <div class="card-body bg-light">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <small class="text-muted">
+                                <i class="bi bi-person-badge"></i> Moderator
+                            </small>
+                            <small class="text-muted">
+                                {{ response.created_at|date:"M d, H:i" }}
+                            </small>
+                        </div>
+                        <p class="mb-0">{{ response.message }}</p>
+                    </div>
                 </div>
+                {% endif %}
+                {% endfor %}
+
+                {% if not report.responses.filter %}
+                <div class="alert alert-secondary">
+                    <i class="bi bi-info-circle"></i> No public updates yet. Internal notes are visible only to
+                    moderators.
+                </div>
+                {% endif %}
+                {% else %}
+                <div class="alert alert-secondary">
+                    <i class="bi bi-clock-history"></i> No updates from moderators yet.
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>

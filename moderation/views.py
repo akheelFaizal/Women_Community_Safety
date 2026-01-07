@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import user_passes_test, login_required, permission_required
 from django.contrib import messages
 from reports.models import Report
-from .forms import ReportResponseForm, PostForm
+from .forms import ReportResponseForm, PostForm, SafetyFeedForm
 
 def is_moderator(user):
     return user.is_authenticated and (user.groups.filter(name='Moderators').exists() or user.is_superuser)
@@ -72,9 +72,26 @@ def create_awareness_post(request):
         if form.is_valid():
             post = form.save(commit=False)
             post.author = request.user
+            post.status = 'pending'
             post.save()
-            messages.success(request, 'Safety tip published successfully.')
+            messages.success(request, 'Safety tip submitted for approval.')
             return redirect('moderator_dashboard')
     else:
         form = PostForm()
-    return render(request, 'moderation/create_post.html', {'form': form})
+    return render(request, 'moderation/create_post.html', {'form': form, 'title': 'Create Awareness Post'})
+
+@permission_required('awareness.add_post', login_url='login')
+def create_safety_feed(request):
+    if request.method == 'POST':
+        form = SafetyFeedForm(request.POST)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.is_alert = True
+            post.status = 'pending'
+            post.save()
+            messages.success(request, 'Safety Feed alert submitted for approval.')
+            return redirect('moderator_dashboard')
+    else:
+        form = SafetyFeedForm()
+    return render(request, 'moderation/create_post.html', {'form': form, 'title': 'Create Safety Feed Alert'})
