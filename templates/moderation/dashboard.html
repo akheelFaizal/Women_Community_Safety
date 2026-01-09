@@ -1,94 +1,206 @@
 {% extends 'base.html' %}
+
 {% block title %}Moderator Dashboard - WomenSafe{% endblock %}
+
 {% block content %}
-<div class="row mb-4">
-    <div class="col-md-7">
-        <h2 class="fw-bold text-dark">Moderator Dashboard</h2>
-        <p class="text-muted">Manage and review incoming safety reports.</p>
-    </div>
-    <div class="col-md-5 text-end">
-        <a href="{% url 'create_post' %}" class="btn btn-primary me-2">
-            <i class="bi bi-file-earmark-text"></i> New Awareness Post
-        </a>
-        <a href="{% url 'create_feed' %}" class="btn btn-danger">
-            <i class="bi bi-megaphone"></i> New Safety Feed
-        </a>
-    </div>
-</div>
+<style>
+    .icon-box {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        font-size: 1.5rem;
+    }
+    .bg-soft-primary { background-color: rgba(13, 110, 253, 0.1); color: #0d6efd; }
+    .bg-soft-warning { background-color: rgba(255, 193, 7, 0.1); color: #ffc107; }
+    .bg-soft-success { background-color: rgba(25, 135, 84, 0.1); color: #198754; }
+    .bg-soft-danger  { background-color: rgba(220, 53, 69, 0.1); color: #dc3545; }
+    
+    .card-hover:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+        transition: all 0.3s ease;
+    }
+    
+    .table-avatar {
+        width: 32px;
+        height: 32px;
+        background-color: #e9ecef;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        margin-right: 8px;
+        color: #6c757d;
+    }
+</style>
 
-<div class="row mb-4">
-    <div class="col-md-4">
-        <div class="card bg-primary text-white shadow-sm border-0">
-            <div class="card-body">
-                <h5 class="card-title">New Reports</h5>
-                <h2 class="display-4 fw-bold">{{ submitted_count }}</h2>
-            </div>
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h2 class="fw-bold text-dark mb-1">Moderator Dashboard</h2>
+            <p class="text-muted mb-0">Overview of safety reports and platform activity.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'create_post' %}" class="btn btn-outline-primary d-flex align-items-center gap-2">
+                <i class="bi bi-file-earmark-plus"></i> New Post
+            </a>
+            <a href="{% url 'create_feed' %}" class="btn btn-primary d-flex align-items-center gap-2">
+                <i class="bi bi-megaphone-fill"></i> New Alert
+            </a>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card bg-warning text-dark shadow-sm border-0">
-            <div class="card-body">
-                <h5 class="card-title">Under Review</h5>
-                <h2 class="display-4 fw-bold">{{ under_review_count }}</h2>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card bg-success text-white shadow-sm border-0">
-            <div class="card-body">
-                <h5 class="card-title">Resolved</h5>
-                <h2 class="display-4 fw-bold">{{ resolved_count }}</h2>
-            </div>
-        </div>
-    </div>
-</div>
 
-<div class="card shadow border-0">
-    <div class="card-header bg-white py-3">
-        <h5 class="mb-0 fw-bold">Recent Reports</h5>
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-3 card-hover h-100">
+                <div class="card-body d-flex align-items-center justify-content-between p-4">
+                    <div>
+                        <h6 class="text-uppercase text-muted fw-semibold mb-2" style="font-size: 0.75rem; letter-spacing: 1px;">New Reports</h6>
+                        <h2 class="mb-0 fw-bold text-dark">{{ submitted_count }}</h2>
+                    </div>
+                    <div class="icon-box bg-soft-danger">
+                        <i class="bi bi-exclamation-circle-fill"></i>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0 px-4 pb-3 pt-0">
+                    <small class="text-muted"><i class="bi bi-arrow-right text-muted"></i> Awaiting Triage</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-3 card-hover h-100">
+                <div class="card-body d-flex align-items-center justify-content-between p-4">
+                    <div>
+                        <h6 class="text-uppercase text-muted fw-semibold mb-2" style="font-size: 0.75rem; letter-spacing: 1px;">In Progress</h6>
+                        <h2 class="mb-0 fw-bold text-dark">{{ under_review_count }}</h2>
+                    </div>
+                    <div class="icon-box bg-soft-warning">
+                        <i class="bi bi-hourglass-split"></i>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0 px-4 pb-3 pt-0">
+                    <small class="text-muted"><i class="bi bi-clock"></i> Active investigations</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm rounded-3 card-hover h-100">
+                <div class="card-body d-flex align-items-center justify-content-between p-4">
+                    <div>
+                        <h6 class="text-uppercase text-muted fw-semibold mb-2" style="font-size: 0.75rem; letter-spacing: 1px;">Resolved</h6>
+                        <h2 class="mb-0 fw-bold text-dark">{{ resolved_count }}</h2>
+                    </div>
+                    <div class="icon-box bg-soft-success">
+                        <i class="bi bi-check-circle-fill"></i>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0 px-4 pb-3 pt-0">
+                    <small class="text-success fw-semibold"><i class="bi bi-graph-up"></i> Cases closed</small>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="bg-light">
-                <tr>
-                    <th>Date</th>
-                    <th>Category</th>
-                    <th>Location</th>
-                    <th>Reporter</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for report in reports %}
-                <tr>
-                    <td>{{ report.created_at|date:"M d, H:i" }}</td>
-                    <td>{{ report.get_category_display }}</td>
-                    <td>{{ report.location_text|truncatechars:30 }}</td>
-                    <td>
-                        {% if report.is_anonymous %}
-                        <span class="badge bg-secondary">Anonymous</span>
-                        {% else %}
-                        {{ report.user.username }}
-                        {% endif %}
-                    </td>
-                    <td>
-                        <span
-                            class="badge bg-{% if report.status == 'resolved' %}success{% elif report.status == 'submitted' %}danger{% else %}warning text-dark{% endif %}">
-                            {{ report.get_status_display }}
-                        </span>
-                    </td>
-                    <td>
-                        <a href="{% url 'review_report' report.pk %}" class="btn btn-sm btn-outline-primary">Review</a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="6" class="text-center py-4">No reports found.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-header bg-white py-3 px-4 border-bottom">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold">Recent Reports</h5>
+                <button class="btn btn-sm btn-light text-muted"><i class="bi bi-filter"></i> Filter</button>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" style="min-width: 800px;">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="px-4 py-3 text-uppercase text-muted small fw-semibold border-0">Reporter</th>
+                        <th class="py-3 text-uppercase text-muted small fw-semibold border-0">Category</th>
+                        <th class="py-3 text-uppercase text-muted small fw-semibold border-0">Location</th>
+                        <th class="py-3 text-uppercase text-muted small fw-semibold border-0">Date</th>
+                        <th class="py-3 text-uppercase text-muted small fw-semibold border-0">Status</th>
+                        <th class="px-4 py-3 text-end text-uppercase text-muted small fw-semibold border-0">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for report in reports %}
+                    <tr>
+                        <td class="px-4">
+                            <div class="d-flex align-items-center">
+                                <div class="table-avatar">
+                                    {% if report.is_anonymous %}
+                                        <i class="bi bi-person-fill-slash"></i>
+                                    {% else %}
+                                        {{ report.user.username|slice:":1"|upper }}
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    {% if report.is_anonymous %}
+                                        <span class="d-block fw-semibold text-dark">Anonymous</span>
+                                        <small class="text-muted">Hidden ID</small>
+                                    {% else %}
+                                        <span class="d-block fw-semibold text-dark">{{ report.user.username }}</span>
+                                        <small class="text-muted">Verified User</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+
+                        <td>
+                            <span class="fw-medium text-dark">{{ report.get_category_display }}</span>
+                        </td>
+
+                        <td>
+                            <div class="d-flex align-items-center text-muted">
+                                <i class="bi bi-geo-alt me-1 small"></i>
+                                {{ report.location_text|truncatechars:25 }}
+                            </div>
+                        </td>
+
+                        <td class="text-muted">
+                            {{ report.created_at|date:"M d, Y" }}
+                            <small class="d-block text-muted" style="font-size: 0.75rem;">{{ report.created_at|date:"H:i A" }}</small>
+                        </td>
+
+                        <td>
+                            {% if report.status == 'resolved' %}
+                                <span class="badge rounded-pill bg-soft-success border border-success border-opacity-10">
+                                    {{ report.get_status_display }}
+                                </span>
+                            {% elif report.status == 'submitted' %}
+                                <span class="badge rounded-pill bg-soft-danger border border-danger border-opacity-10">
+                                    New
+                                </span>
+                            {% else %}
+                                <span class="badge rounded-pill bg-soft-warning border border-warning border-opacity-10">
+                                    {{ report.get_status_display }}
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td class="text-end px-4">
+                            <a href="{% url 'review_report' report.pk %}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                Review
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <div class="text-muted">
+                                <i class="bi bi-inbox display-6 mb-3 d-block opacity-50"></i>
+                                <p class="mb-0">No active reports found.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 {% endblock %}

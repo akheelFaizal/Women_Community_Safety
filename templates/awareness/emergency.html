@@ -1,65 +1,135 @@
 {% extends 'base.html' %}
+
 {% block title %}Emergency Contacts - WomenSafe{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <div class="row mb-4">
-        <div class="col-md-8">
-            <h2 class="fw-bold text-danger">Emergency Contacts</h2>
-            <p class="text-muted">Important helplines and emergency services</p>
+<style>
+    .contact-card {
+        border: none;
+        border-radius: 16px;
+        transition: all 0.3s ease;
+    }
+    .contact-card:hover {
+        transform: scale(1.01);
+    }
+    .call-btn {
+        min-width: 140px;
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        transition: all 0.3s ease;
+    }
+    .call-btn:hover {
+        box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+        transform: translateY(-2px);
+    }
+    .icon-circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+        font-size: 1.5rem;
+    }
+    .emergency-banner {
+        background: linear-gradient(135deg, #fff5f5 0%, #fff 100%);
+        border-left: 5px solid #ffc107;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="row align-items-center mb-5">
+        <div class="col-md-7">
+            <h1 class="fw-extrabold text-dark mb-1">Emergency Contacts</h1>
+            <p class="text-muted fs-5">Get immediate help from verified services and helplines.</p>
         </div>
-        <div class="col-md-4 text-end">
+        <div class="col-md-5 text-md-end mt-3 mt-md-0">
             {% if user.is_staff or user.groups.all|length > 0 %}
-            <a href="{% url 'add_emergency_contact' %}" class="btn btn-danger">
-                <i class="bi bi-plus-circle"></i> Add Contact
+            <a href="{% url 'add_emergency_contact' %}" class="btn btn-dark rounded-pill px-4">
+                <i class="bi bi-plus-lg me-2"></i> Add New Contact
             </a>
             {% endif %}
         </div>
     </div>
 
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="list-group shadow-sm">
+        <div class="col-lg-9">
+            
+            <div class="d-flex flex-column gap-3 mb-5">
                 {% for contact in contacts %}
-                <div class="list-group-item list-group-item-action p-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="flex-grow-1">
-                            <h4 class="mb-1 fw-bold text-dark">{{ contact.name }}</h4>
-                            <p class="mb-0 text-muted">{{ contact.description }}</p>
-                        </div>
-                        <div class="d-flex align-items-center gap-2">
-                            <a href="tel:{{ contact.number }}" class="btn btn-danger btn-lg rounded-pill px-4 fw-bold">
-                                <i class="bi bi-telephone-fill me-2"></i> {{ contact.number }}
-                            </a>
-                            {% if user.is_staff or user.groups.all|length > 0 %}
-                            <a href="{% url 'edit_emergency_contact' contact.pk %}"
-                                class="btn btn-outline-secondary btn-sm" title="Edit">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                            <form method="post" action="{% url 'delete_emergency_contact' contact.pk %}"
-                                class="d-inline" onsubmit="return confirm('Delete this contact?');">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </form>
-                            {% endif %}
+                <div class="card contact-card shadow-sm">
+                    <div class="card-body p-4">
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-4">
+                            
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="icon-circle">
+                                    <i class="bi bi-shield-fill-exclamation"></i>
+                                </div>
+                                <div>
+                                    <h4 class="fw-bold text-dark mb-1">{{ contact.name }}</h4>
+                                    <p class="text-muted mb-0 small">{{ contact.description }}</p>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-3">
+                                <a href="tel:{{ contact.number }}" class="btn btn-danger btn-lg call-btn rounded-pill px-4 py-2 fw-bold d-flex align-items-center justify-content-center">
+                                    <i class="bi bi-telephone-fill me-2"></i> {{ contact.number }}
+                                </a>
+
+                                {% if user.is_staff or user.groups.all|length > 0 %}
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-light btn-sm rounded-circle" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-three-dots-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                        <li>
+                                            <a class="dropdown-item" href="{% url 'edit_emergency_contact' contact.pk %}">
+                                                <i class="bi bi-pencil me-2"></i> Edit
+                                            </a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <form method="post" action="{% url 'delete_emergency_contact' contact.pk %}" onsubmit="return confirm('Delete this contact?');">
+                                                {% csrf_token %}
+                                                <button type="submit" class="dropdown-item text-danger">
+                                                    <i class="bi bi-trash me-2"></i> Delete
+                                                </button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
                 {% empty %}
-                <div class="text-center py-5">
-                    <p class="text-muted">No emergency contacts added yet.</p>
+                <div class="text-center py-5 bg-light rounded-4 border border-dashed">
+                    <i class="bi bi-telephone-x display-4 text-muted opacity-50 mb-3 d-block"></i>
+                    <p class="text-muted">No emergency contacts have been listed yet.</p>
                 </div>
                 {% endfor %}
             </div>
 
-            <div class="mt-5 text-center">
-                <div class="alert alert-warning border-0 shadow-sm d-inline-block text-start">
-                    <h5 class="alert-heading fw-bold"><i class="bi bi-shield-exclamation me-2"></i>Important</h5>
-                    <p class="mb-0">If you are in immediate danger, please call your local police (100) or emergency
-                        services (112) directly without delay.</p>
+            <div class="card emergency-banner shadow-sm rounded-4 border-0">
+                <div class="card-body p-4">
+                    <div class="d-flex gap-3">
+                        <div class="text-warning fs-1">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold text-dark">Immediate Danger?</h5>
+                            <p class="text-secondary mb-0">
+                                If you are in a life-threatening situation, do not wait for a response from the platform. 
+                                Call <strong>Local Police (100)</strong> or <strong>Emergency Services (112)</strong> immediately.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             </div>
+
         </div>
     </div>
-    {% endblock %}
+</div>
+{% endblock %}
